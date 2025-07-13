@@ -1,5 +1,6 @@
 import { Item, TodoItem } from "@/components/Item";
 import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 import {
   FlatList,
   Image,
@@ -7,12 +8,14 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
-  const todoData: TodoItem[] = [
+  const [newTodo, setNewTodo] = useState<string>("");
+
+  const [todos, setTodos] = useState<TodoItem[]>([
     {
       id: 1,
       title: "Todo 1",
@@ -43,7 +46,15 @@ export default function Index() {
       title: "Todo 6",
       isDone: false,
     },
-  ];
+  ]);
+
+  function addTodo() {
+    setTodos((prev) => ([
+      ...prev,
+      { id: Math.floor(Math.random() * 100), isDone: false, title: newTodo },
+    ]));
+    setNewTodo("");
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -73,14 +84,24 @@ export default function Index() {
       </View>
 
       <FlatList
-        data={todoData}
+        data={[...todos].reverse()}
         keyExtractor={(item) => item.id.toString()}
         renderItem={Item}
       />
-      
-      <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={10} style={styles.footer}>
-        <TextInput placeholder="Type your todo." style={styles.newTodoInput} />
-        <TouchableOpacity onPress={() => {}} style={styles.addButton}>
+
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={10}
+        style={styles.footer}
+      >
+        <TextInput
+          placeholder="Type your todo."
+          style={styles.newTodoInput}
+          value={newTodo}
+          onChangeText={setNewTodo}
+          autoCorrect={false}
+        />
+        <TouchableOpacity onPress={addTodo} style={styles.addButton}>
           <Ionicons name="add" size={24} color="#fff" />
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -118,7 +139,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 20
+    gap: 20,
   },
   newTodoInput: {
     backgroundColor: "#fff",
@@ -126,11 +147,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     color: "#333",
-    paddingLeft: 16
+    paddingLeft: 16,
   },
   addButton: {
     backgroundColor: "#4630eb",
     padding: 8,
-    borderRadius: 10
-  }
+    borderRadius: 10,
+  },
 });
