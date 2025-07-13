@@ -1,18 +1,18 @@
+import { Item, TodoItem } from "@/components/Item";
 import { Ionicons } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox";
 import {
   FlatList,
   Image,
+  KeyboardAvoidingView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
-  const todoData = [
+  const todoData: TodoItem[] = [
     {
       id: 1,
       title: "Todo 1",
@@ -75,18 +75,15 @@ export default function Index() {
       <FlatList
         data={todoData}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.todoContainer}>
-            <View style={styles.todoInfoContainer}>
-              <Checkbox value={item.isDone} />
-              <Text style={styles.todoText}>{item.title}</Text>
-            </View>
-            <TouchableOpacity onPress={() => { alert("Deleted " + item.id) }}>
-              <Ionicons name="trash" size={24} color="red" />
-            </TouchableOpacity>
-          </View>
-        )}
+        renderItem={Item}
       />
+      
+      <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={10} style={styles.footer}>
+        <TextInput placeholder="Type your todo." style={styles.newTodoInput} />
+        <TouchableOpacity onPress={() => {}} style={styles.addButton}>
+          <Ionicons name="add" size={24} color="#fff" />
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -117,22 +114,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
-  todoContainer: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 20,
+  footer: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    alignItems: "center",
+    gap: 20
   },
-  todoInfoContainer: {
-    flexDirection: "row",
-    gap: 10,
-    alignItems: "center",
-  },
-  todoText: {
+  newTodoInput: {
+    backgroundColor: "#fff",
+    flex: 1,
+    borderRadius: 10,
     fontSize: 16,
-    color: "#333"
+    color: "#333",
+    paddingLeft: 16
+  },
+  addButton: {
+    backgroundColor: "#4630eb",
+    padding: 8,
+    borderRadius: 10
   }
 });
