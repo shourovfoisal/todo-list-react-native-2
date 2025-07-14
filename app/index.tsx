@@ -17,9 +17,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Index() {
   const [newTodo, setNewTodo] = useState<string>("");
   const [todos, setTodos] = useState<TodoItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   async function handleAddTodo() {
-    if(newTodo.trim()) {
+    if (newTodo.trim()) {
       await addTodo({
         id: Math.floor(Math.random() * 100),
         isDone: false,
@@ -32,8 +33,20 @@ export default function Index() {
   }
 
   async function refreshTodos() {
-    setTodos(await getTodos());
+    handleSearch(searchTerm);
   }
+
+  async function handleSearch(term: string) {
+    const lowerCaseTerm = term.toLowerCase();
+    const filteredTodos = (await getTodos()).filter((eachTodo) =>
+      eachTodo.title.toLowerCase().includes(lowerCaseTerm)
+    );
+    setTodos(filteredTodos);
+  }
+
+  useEffect(() => {
+    handleSearch(searchTerm);
+  }, [searchTerm]);
 
   useEffect(() => {
     refreshTodos();
@@ -63,13 +76,17 @@ export default function Index() {
           placeholder="Search Todo"
           style={styles.searchInput}
           clearButtonMode="always"
+          value={searchTerm}
+          onChangeText={setSearchTerm}
         />
       </View>
 
       <FlatList
         data={[...todos].reverse()}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({item}) => <Item item={item} refreshTodos={refreshTodos}/>}
+        renderItem={({ item }) => (
+          <Item item={item} refreshTodos={refreshTodos} />
+        )}
       />
 
       <KeyboardAvoidingView
