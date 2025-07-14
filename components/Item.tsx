@@ -1,25 +1,40 @@
-import { deleteTodo } from "@/utils/storage"
-import { Ionicons } from "@expo/vector-icons"
-import { Checkbox } from "expo-checkbox"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { deleteTodo, toggleTodoStatus } from "@/utils/storage";
+import { Ionicons } from "@expo/vector-icons";
+import { Checkbox } from "expo-checkbox";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export type TodoItem = {
-  id: number,
-  title: string,
-  isDone: boolean
-}
+  id: number;
+  title: string;
+  isDone: boolean;
+};
 
 type Props = {
-  item: TodoItem,
-  refreshTodos: () => void
-}
+  item: TodoItem;
+  refreshTodos: () => void;
+};
 
-async function handleDeleteTodo(item: TodoItem, refreshTodos: Props["refreshTodos"]) {
+async function handleDeleteTodo(
+  item: TodoItem,
+  refreshTodos: Props["refreshTodos"]
+) {
   try {
-    await deleteTodo(item.id)
+    await deleteTodo(item.id);
     refreshTodos();
   } catch (error) {
-    console.log(error)
+    console.log(error);
+  }
+}
+
+async function handleUpdateTodo(
+  item: TodoItem,
+  refreshTodos: Props["refreshTodos"]
+) {
+  try {
+    await toggleTodoStatus(item.id);
+    refreshTodos();
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -27,15 +42,26 @@ export const Item = ({ item, refreshTodos }: Props) => {
   return (
     <View style={styles.todoContainer}>
       <View style={styles.todoInfoContainer}>
-        <Checkbox value={item.isDone} color={item.isDone ? "#4630eb" : ""} />
-        <Text style={[styles.todoText, item.isDone ? { textDecorationLine: "line-through" } : {}]}>{item.title}</Text>
+        <Checkbox
+          value={item.isDone}
+          color={item.isDone ? "#4630eb" : undefined}
+          onValueChange={() => handleUpdateTodo(item, refreshTodos)}
+        />
+        <Text
+          style={[
+            styles.todoText,
+            item.isDone ? { textDecorationLine: "line-through" } : {},
+          ]}
+        >
+          {item.title}
+        </Text>
       </View>
       <TouchableOpacity onPress={() => handleDeleteTodo(item, refreshTodos)}>
         <Ionicons name="trash" size={24} color="red" />
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   todoContainer: {
@@ -54,6 +80,6 @@ const styles = StyleSheet.create({
   },
   todoText: {
     fontSize: 16,
-    color: "#333"
+    color: "#333",
   },
-})
+});

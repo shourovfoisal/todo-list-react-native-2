@@ -21,3 +21,16 @@ export async function deleteTodo(id: number): Promise<void> {
     JSON.stringify(todos.filter((eachTodo) => eachTodo.id !== id))
   );
 }
+
+export async function overwriteTodos(items: TodoItem[]): Promise<void> {
+  await AsyncStorage.setItem(todoStorageName, JSON.stringify(items));
+}
+
+export async function toggleTodoStatus(id: number): Promise<void> {
+  const todos = await getTodos();
+  const selectedTodo = todos.find(eachTodo => eachTodo.id === id);
+  if(selectedTodo) {
+    selectedTodo.isDone = !selectedTodo.isDone;
+  }
+  await overwriteTodos(todos);
+}
