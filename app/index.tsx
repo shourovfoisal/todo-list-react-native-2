@@ -1,6 +1,7 @@
 import { Item, TodoItem } from "@/components/Item";
+import { addTodo, getTodos } from "@/utils/storage";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -14,47 +15,27 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const [newTodo, setNewTodo] = useState<string>("");
+  const [todos, setTodos] = useState<TodoItem[]>([]);
 
-  const [todos, setTodos] = useState<TodoItem[]>([
-    {
-      id: 1,
-      title: "Todo 1",
-      isDone: false,
-    },
-    {
-      id: 2,
-      title: "Todo 2",
-      isDone: false,
-    },
-    {
-      id: 3,
-      title: "Todo 3",
-      isDone: false,
-    },
-    {
-      id: 4,
-      title: "Todo 4",
-      isDone: true,
-    },
-    {
-      id: 5,
-      title: "Todo 5",
-      isDone: false,
-    },
-    {
-      id: 6,
-      title: "Todo 6",
-      isDone: false,
-    },
-  ]);
-
-  function addTodo() {
-    setTodos((prev) => ([
-      ...prev,
-      { id: Math.floor(Math.random() * 100), isDone: false, title: newTodo },
-    ]));
-    setNewTodo("");
+  async function handleAddTodo() {
+    if(newTodo.trim()) {
+      await addTodo({
+        id: Math.floor(Math.random() * 100),
+        isDone: false,
+        title: newTodo,
+      });
+      setNewTodo("");
+      refreshTodos();
+    }
   }
+
+  async function refreshTodos() {
+    setTodos(await getTodos());
+  }
+
+  useEffect(() => {
+    refreshTodos();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -86,7 +67,7 @@ export default function Index() {
       <FlatList
         data={[...todos].reverse()}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={Item}
+        renderItem={({item}) => <Item item={item} refreshTodos={refreshTodos}/>}
       />
 
       <KeyboardAvoidingView
@@ -101,7 +82,7 @@ export default function Index() {
           onChangeText={setNewTodo}
           autoCorrect={false}
         />
-        <TouchableOpacity onPress={addTodo} style={styles.addButton}>
+        <TouchableOpacity onPress={handleAddTodo} style={styles.addButton}>
           <Ionicons name="add" size={24} color="#fff" />
         </TouchableOpacity>
       </KeyboardAvoidingView>

@@ -1,5 +1,6 @@
+import { deleteTodo } from "@/utils/storage"
 import { Ionicons } from "@expo/vector-icons"
-import Checkbox from "expo-checkbox"
+import { Checkbox } from "expo-checkbox"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 
 export type TodoItem = {
@@ -8,14 +9,29 @@ export type TodoItem = {
   isDone: boolean
 }
 
-export const Item = ({ item }: {item: TodoItem}) => {
+type Props = {
+  item: TodoItem,
+  refreshTodos: () => void
+}
+
+async function handleDeleteTodo(item: TodoItem, refreshTodos: Props["refreshTodos"]) {
+  try {
+    await deleteTodo(item.id)
+    alert("Deleted " + item.id)
+    refreshTodos();
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const Item = ({ item, refreshTodos }: Props) => {
   return (
     <View style={styles.todoContainer}>
             <View style={styles.todoInfoContainer}>
               <Checkbox value={item.isDone} color={item.isDone ? "#4630eb" : ""} />
               <Text style={[styles.todoText, item.isDone ? { textDecorationLine: "line-through" } : {}]}>{item.title}</Text>
             </View>
-            <TouchableOpacity onPress={() => { alert("Deleted " + item.id) }}>
+            <TouchableOpacity onPress={() => handleDeleteTodo(item, refreshTodos)}>
               <Ionicons name="trash" size={24} color="red" />
             </TouchableOpacity>
           </View>
