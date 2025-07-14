@@ -17,7 +17,6 @@ type Props = {
 async function handleDeleteTodo(item: TodoItem, refreshTodos: Props["refreshTodos"]) {
   try {
     await deleteTodo(item.id)
-    alert("Deleted " + item.id)
     refreshTodos();
   } catch (error) {
     console.log(error)
@@ -27,14 +26,14 @@ async function handleDeleteTodo(item: TodoItem, refreshTodos: Props["refreshTodo
 export const Item = ({ item, refreshTodos }: Props) => {
   return (
     <View style={styles.todoContainer}>
-            <View style={styles.todoInfoContainer}>
-              <Checkbox value={item.isDone} color={item.isDone ? "#4630eb" : ""} />
-              <Text style={[styles.todoText, item.isDone ? { textDecorationLine: "line-through" } : {}]}>{item.title}</Text>
-            </View>
-            <TouchableOpacity onPress={() => handleDeleteTodo(item, refreshTodos)}>
-              <Ionicons name="trash" size={24} color="red" />
-            </TouchableOpacity>
-          </View>
+      <View style={styles.todoInfoContainer}>
+        <Checkbox value={item.isDone} color={item.isDone ? "#4630eb" : ""} />
+        <Text style={[styles.todoText, item.isDone ? { textDecorationLine: "line-through" } : {}]}>{item.title}</Text>
+      </View>
+      <TouchableOpacity onPress={() => handleDeleteTodo(item, refreshTodos)}>
+        <Ionicons name="trash" size={24} color="red" />
+      </TouchableOpacity>
+    </View>
   )
 }
 

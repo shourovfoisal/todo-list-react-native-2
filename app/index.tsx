@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   StyleSheet,
   TextInput,
@@ -26,6 +27,7 @@ export default function Index() {
       });
       setNewTodo("");
       refreshTodos();
+      Keyboard.dismiss();
     }
   }
 
